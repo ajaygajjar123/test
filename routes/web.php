@@ -19,27 +19,22 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => 'auth'],function(){
+	// student routes
+	Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+	Route::get('/student', [App\Http\Controllers\StudentController::class,'index'])->name('student');
+	Route::post('/student/store', [App\Http\Controllers\StudentController::class,'store'])->name('student.store');
+	Route::get('/student/{id}/edit', [App\Http\Controllers\StudentController::class,'edit'])->name('student.edit');
+	Route::post('/student/{id}/update', [App\Http\Controllers\StudentController::class,'update'])->name('student.update');
+	Route::get('/student/{id}/delete', [App\Http\Controllers\StudentController::class,'destroy'])->name('student.delete');
 
-    // subject routes
-    Route::resource('/subject', App\Http\Controllers\SubjectController::class);
-    Route::get('/data', [App\Http\Controllers\SubjectController::class, 'data'])->name('subject.data');
-    Route::get('/subject/{id}/edit', [App\Http\Controllers\SubjectController::class, 'edit'])->name('subject.edit');
-    Route::get('/subject/{id}/delete', [App\Http\Controllers\SubjectController::class, 'destroy'])->name('subject.delete');
 
-    // Teacher routes
-    Route::resource('/teacher', App\Http\Controllers\TeacherController::class);
-    Route::get('/teacherdata', [App\Http\Controllers\TeacherController::class, 'teacherdata'])->name('teacher.teacherdata');
-    Route::get('/teacher/{id}/edit', [App\Http\Controllers\TeacherController::class, 'edit'])->name('teacher.edit');
-    Route::get('/teacher/{id}/delete', [App\Http\Controllers\TeacherController::class, 'destroy'])->name('teacher.delete');
-
-    // Student routes
-    Route::resource('/student', App\Http\Controllers\StudentController::class);
-    Route::get('/studentdata', [App\Http\Controllers\StudentController::class, 'studentdata'])->name('student.studentdata');
-    Route::get('/student/{id}/edit', [App\Http\Controllers\StudentController::class, 'edit'])->name('student.edit');
-    Route::get('/student/{id}/delete', [App\Http\Controllers\StudentController::class, 'destroy'])->name('student.delete');
+	// address routes
+	Route::get('/addresslist', [App\Http\Controllers\AddressController::class,'addresslist'])->name('addresslist');
+	Route::get('/address', [App\Http\Controllers\AddressController::class,'index'])->name('address');
+	Route::post('/address/store', [App\Http\Controllers\AddressController::class,'store'])->name('address.store');
+	Route::get('/address/{id}/edit', [App\Http\Controllers\AddressController::class,'edit'])->name('address.edit');
+	Route::post('/address/{id}/update', [App\Http\Controllers\AddressController::class,'update'])->name('address.update');
+	Route::get('/address/{id}/delete', [App\Http\Controllers\AddressController::class,'destroy'])->name('address.delete');
 });
-
-Route::get('/export', [App\Http\Controllers\StudentController::class, 'export'])->name('export');

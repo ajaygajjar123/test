@@ -2,43 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
 use Illuminate\Http\Request;
+use App\Models\Student;
+use App\Models\Address;
 use DataTables;
 use Validator;
-class StudentController extends Controller
+class AddressController extends Controller
 {
+    public function addresslist(){
+        $studentdata = Student::all();
+        return view('address.address',compact('studentdata'));
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $data =  Student::select('*');
+        $data =  Address::select('*');
         return DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('name', function (Student $data) {
-                return $data->name;    
+            ->addColumn('name', function (Address $data) {
+                return $data->address;    
             })
-            ->addColumn('phone', function (Student $data) {
-                return $data->phone;    
-            })
-            ->addColumn('email', function (Student $data) {
-                return $data->email;    
-            })
-            ->addColumn('hobbies', function (Student $data) {
-                return $data->hobbies;    
+            ->addColumn('student_name', function (Address $data) {
+                return $data->getstudentname->map(function($sub) {
+                    return $sub->name;
+                })->implode('<br>');
             })
             ->addColumn('action', function($row){
-                return '<a href="student/' . $row->id . '/edit" class="btn btn-primary">Edit</a>
-                <a href="student/' . $row->id . '/delete" class="btn btn-danger">Delete</a>';
+                return '<a href="address/' . $row->id . '/edit" class="btn btn-primary">Edit</a>
+                <a href="address/' . $row->id . '/delete" class="btn btn-danger">Delete</a>';
        
             })
             ->rawColumns(['action'])
             ->make(true);
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -58,19 +58,15 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'phone' => 'required',
-            'hobbies' => 'required',
-            'email' => 'required|email|unique:student',
+            'address' => 'required',
+            'stud_id' => 'required',
         ]);
      
         if ($validator->passes()) {
-            $student = new Student;
-            $student->name = $request->name;
-            $student->phone = $request->phone;
-            $student->hobbies = $request->hobbies;
-            $student->email = $request->email;
-            $student->save();
+            $address = new Address;
+            $address->address = $request->address;
+            $address->stud_id = $request->stud_id;
+            $address->save();
             return response()->json(['success'=>'Added new records.']);
         }
         return response()->json(['error'=>$validator->errors()->all()]);
@@ -95,8 +91,9 @@ class StudentController extends Controller
      */
     public function edit($id)
     {
-        $student = Student::find($id)->first();
-        return view('student.edit', compact('student'));
+        $studentdata = Student::all();
+        $address = Address::find($id)->first();
+        return view('address.edit',compact('studentdata','address'));
     }
 
     /**
@@ -109,23 +106,20 @@ class StudentController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'phone' => 'required',
-            'hobbies' => 'required',
-            'email' => 'required',
+            'address' => 'required',
+            'stud_id' => 'required'
         ]);
         if ($validator->passes()) {
-            $student = Student::find($id);
-            $student->name = $request->name;
-            $student->phone = $request->phone;
-            $student->hobbies = $request->hobbies;
-            $student->email = $request->email;
-            $student->update();
+            $address = Address::find($id);
+            $address->address = $request->address;
+            $address->stud_id = $request->stud_id;
+            $address->update();
             return response()->json(['success'=>'Records Updated.']);  
             
         }else{
             return response()->json(['error'=>$validator->errors()->all()]); 
         }
+
     }
 
     /**
@@ -136,11 +130,11 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        $student = Student::findOrFail($id);
-        if($student->delete()){
-            return redirect()->route('home')->with('message','Student Deleted successfully');
+         $address = Address::findOrFail($id);
+        if($address->delete()){
+            return redirect()->route('addresslist')->with('message','Address Deleted successfully');
         }else{
-            return redirect()->route('home')->with('message','Student Deleted Fails');
+            return redirect()->route('addresslist')->with('message','Address Deleted Fails');
         }
     }
 }

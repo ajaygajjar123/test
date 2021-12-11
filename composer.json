@@ -12,7 +12,6 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.4",
-        "phpoffice/phpspreadsheet": "dev-NumberFormatMask-Helpers",
         "yajra/laravel-datatables-oracle": "^9.18"
     },
     "require-dev": {

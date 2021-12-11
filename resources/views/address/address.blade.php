@@ -17,17 +17,16 @@
                 <div class="card-header">
                     {{ __('Student') }}
                     <a href="{{ url('/home') }}" class="btn btn-primary" style="float: right; margin-left:5px"> Back </a>
-                    <a href="{{ url('/addresslist') }}" class="btn btn-primary" style="float: right; margin-left:5px"> Address List  </a>
 
                      <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" style="float: right;" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Student</button>
+                    <button type="button" class="btn btn-primary" style="float: right;" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Address</button>
 
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                   <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Student</h5>
+                                    <h5 class="modal-title" id="exampleModalLabel">Address</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                   </div>
                                   <div class="modal-body">
@@ -35,60 +34,33 @@
                                     <div class="alert alert-danger print-error-msg" style="display:none">
                                         <ul></ul>
                                     </div>
-                                    <form method="POST" action="#" id="studentform">
-                                        @csrf
-                                        <div class="row mb-3">
+                                    <form id="addressform">
+                                         <div class="row mb-3">
                                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Student Name') }}</label>
 
                                             <div class="col-md-6">
-                                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" autocomplete="name" autofocus required>
-                                                @error('name')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
+                                                <select class="form-control" name="stud_id">
+                                                    @foreach($studentdata as $value)
+                                                        <option class="form-control" value="{{ $value->id }}">{{ $value->name }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <label for="phone" class="col-md-4 col-form-label text-md-right">{{ __('Mobile Number') }}</label>
+                                            <label for="hobbies" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
 
                                             <div class="col-md-6">
-                                                <input id="phone" type="number" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" autocomplete="phone" autofocus required>
-                                                @error('phone')
+                                                <input id="address" type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" autocomplete="address" autofocus>
+
+                                                @error('address')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
-
-                                            <div class="col-md-6">
-                                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus required>
-
-                                                @error('email')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <label for="hobbies" class="col-md-4 col-form-label text-md-right">{{ __('Hobbies') }}</label>
-
-                                            <div class="col-md-6">
-                                                <input id="hobbies" type="text" class="form-control @error('hobbies') is-invalid @enderror" name="hobbies" value="{{ old('hobbies') }}" required autocomplete="hobbies" autofocus required>
-
-                                                @error('hobbies')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" id="studentadd" class="btn btn-primary">Submit</button>
+                                        </div> 
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" id="studentadd" class="btn btn-primary">Submit</button>
                                     </form>
                                   </div>
                                   <div class="modal-footer">
@@ -98,20 +70,18 @@
                     </div>
                 </div>
 
-                <div class="card-body table-responsive" style="overflow-x: auto">
+                <div class="card-body">
                     @if (Session::has('message'))
                         <div class="alert alert-success">
                            {{ Session::get('message') }}
                         </div>
                     @endif
-                    <table class="table table-bordered studentdata-table w-100 h-100" >
+                    <table class="table table-bordered address-table">
                         <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Name</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Hobbie</th>
+                                <th>Student</th>
                                 <th width="100px">Action</th>
                             </tr>
                         </thead>
@@ -124,46 +94,40 @@
     </div>
 </div>
 <script type="text/javascript">
-  $(function () {
-    var table = $('.studentdata-table').DataTable({
-        processing: true,
-        serverSide: true,
-        bFilter: true,
-        bInfo: true,
-        ajax: "{{ route('student') }}",
-        columns: [
-            {data: 'id', name: 'id'},
-            {data: 'name', name: 'name'},
-            {data: 'phone', name: 'phone'},
-            {data: 'email', name: 'email'},
-            {data: 'hobbies', name: 'hobbies'},
-            {data: 'action', name: 'action', orderable: false, searchable: false},
-        ]
-    });
-    
-  });
-  $(document).ready(function(){
+    $(function () {
+        var table = $('.address-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('address') }}",
+            columns: [
+                {data: 'id', name: 'id'},
+                {data: 'name', name: 'name'},
+                {data: 'student_name', name: 'student_name'},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
+            ]
+        });
+    }); 
+  $(document).ready(function(e){
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
         $('#studentadd').click(function(){
-            var form = $('#studentform').serialize();
+            var form = $('#addressform').serialize();
             $.ajax({
                 type:'POST',
                 processing: true,
                 serverSide: true,
-                url: "{{ route('student.store') }}",
+                url: "{{ route('address.store') }}",
                 method: "POST",
                 data: form,
                 success: function(result){
                     if($.isEmptyObject(result.error)){
-                        console.log(result.success);
                         $(".print-sucess-msg").css('display','block');
                         $(".print-error-msg").css('display','none');
                         $(".print-sucess-msg").html(result.success);
-                        $('#studentform')[0].reset();
+                        $('#addressform')[0].reset();
                     }else{
                         printErrorMsg(result.error);
                     }
@@ -173,8 +137,8 @@
         });
 
         function printErrorMsg (msg) {
-            $(".print-error-msg").find("ul").html('');
             $(".print-sucess-msg").css('display','none');
+            $(".print-error-msg").find("ul").html('');
             $(".print-error-msg").css('display','block');
             $.each( msg, function( key, value ) {
                 $(".print-error-msg").find("ul").append('<li>'+ value +'</li>');
